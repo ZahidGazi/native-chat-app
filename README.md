@@ -2,6 +2,7 @@
 
 A real-time chat application with a React Native mobile frontend and Node.js backend. Built for learning and experimenting with WebSocket connections, JWT authentication, and mobile development.
 
+![demo](./demo.gif)
 ## What's Inside
 
 This repo contains two main parts:
