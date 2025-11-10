@@ -13,14 +13,40 @@ const Message = require("./models/Message");
 
 const app = express();
 const server = http.createServer(app);
+
+// Configure CORS for production
+const CLIENT_URL = process.env.CLIENT_URL || "*";
+const corsOptions = {
+  origin: CLIENT_URL === "*" ? "*" : CLIENT_URL.split(","),
+  credentials: true,
+};
+
 const io = socketio(server, {
-  cors: { origin: "*" },
+  cors: corsOptions,
 });
 
 connectDB(process.env.MONGO_URI);
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Health check endpoint for Render
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    message: "Native Chat App Server is running",
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
 app.use("/conversations", convRoutes);
@@ -121,5 +147,42 @@ io.on("connection", (socket) => {
   });
 });
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(err.status || 500).json({ 
+    message: err.message || "Internal server error",
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack })
+  });
+});
+
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log(`Server running on ${PORT}`));
+
+// Graceful shutdown
+const gracefulShutdown = async () => {
+  console.log("Received shutdown signal, closing server gracefully...");
+  server.close(() => {
+    console.log("HTTP server closed");
+    process.exit(0);
+  });
+
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.error("Forcing shutdown after timeout");
+    process.exit(1);
+  }, 10000);
+};
+
+process.on("SIGTERM", gracefulShutdown);
+process.on("SIGINT", gracefulShutdown);
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`CORS enabled for: ${CLIENT_URL}`);
+});
