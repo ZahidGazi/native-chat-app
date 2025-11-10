@@ -59,34 +59,45 @@ io.on("connection", (socket) => {
     }
   });
 
-  //payload will consist info such as { conversationId, senderId, text, toUserId }
   socket.on("message:send", async (payload) => {
-    const { conversationId, senderId, text } = payload;
-    // save message
-    const message = await Message.create({
-      conversation: conversationId,
-      sender: senderId,
-      text,
-      readBy: [senderId],
-    });
-    // update conversation
-    await Conversation.findByIdAndUpdate(conversationId, {
-      lastMessage: message._id,
-    });
+    try {
+      const { conversationId, senderId, text } = payload;
+      
+      if (!conversationId || !senderId || !text) {
+        console.log("missing fields:", { conversationId, senderId, text });
+        return;
+      }
 
-    // emit to participants
-    const conversation = await Conversation.findById(conversationId).populate(
-      "participants",
-      "_id"
-    );
-    conversation.participants.forEach((p) => {
-      const sockets = onlineUsers.get(String(p._id));
-      if (sockets)
-        sockets.forEach((sid) => io.to(sid).emit("message:new", message));
-    });
+      const message = await Message.create({
+        conversation: conversationId,
+        sender: senderId,
+        text,
+        readBy: [senderId],
+      });
 
-    // also emit ack to sender
-    socket.emit("message:sent", message);
+      await Conversation.findByIdAndUpdate(conversationId, {
+        lastMessage: message._id,
+      });
+
+      const populatedMessage = await Message.findById(message._id).populate("sender", "name email");
+
+      const conversation = await Conversation.findById(conversationId).populate(
+        "participants",
+        "_id"
+      );
+      
+      conversation.participants.forEach((p) => {
+        const sockets = onlineUsers.get(String(p._id));
+        if (sockets) {
+          sockets.forEach((sid) => io.to(sid).emit("message:new", populatedMessage));
+        }
+      });
+
+      socket.emit("message:sent", populatedMessage);
+    } catch (error) {
+      console.log("message send error:", error);
+      socket.emit("message:error", { error: error.message });
+    }
   });
 
   // typing

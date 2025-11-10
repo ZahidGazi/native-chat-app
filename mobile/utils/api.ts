@@ -22,3 +22,16 @@ export const getMessages = async (token: string, conversationId: string) => {
         headers: { Authorization: `Bearer ${token}` },
     });
 };
+
+export const getOrCreateConversation = async (token: string, participantId: string) => {
+    return api.post("/conversations/between", 
+        { userId: participantId }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+};
+
+export const getConversations = async (token: string) => {
+    return api.get("/conversations", {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+};

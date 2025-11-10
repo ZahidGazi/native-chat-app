@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet, useColorScheme } from "react-native";
 import { loginUser } from "../../utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const colorScheme = useColorScheme();
 
   const handleLogin = async () => {
     try {
@@ -20,22 +21,82 @@ export default function Login() {
     }
   };
 
+  const isDark = colorScheme === 'dark';
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
-      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
+    <View style={[styles.container, { backgroundColor: isDark ? '#000' : '#fff' }]}>
+      <Text style={[styles.title, { color: isDark ? '#fff' : '#000' }]}>Login</Text>
+      <TextInput 
+        placeholder="Email" 
+        value={email} 
+        onChangeText={setEmail} 
+        style={[
+          styles.input,
+          { 
+            backgroundColor: isDark ? '#1c1c1e' : '#fff',
+            color: isDark ? '#fff' : '#000',
+            borderColor: isDark ? '#3a3a3c' : '#ddd'
+          }
+        ]}
+        placeholderTextColor={isDark ? '#8e8e93' : '#999'}
+        autoCapitalize="none"
+        keyboardType="email-address"
+      />
+      <TextInput 
+        placeholder="Password" 
+        value={password} 
+        onChangeText={setPassword} 
+        secureTextEntry 
+        style={[
+          styles.input,
+          { 
+            backgroundColor: isDark ? '#1c1c1e' : '#fff',
+            color: isDark ? '#fff' : '#000',
+            borderColor: isDark ? '#3a3a3c' : '#ddd'
+          }
+        ]}
+        placeholderTextColor={isDark ? '#8e8e93' : '#999'}
+      />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Login" onPress={handleLogin} />
-      <Text onPress={() => router.push("/(auth)/register")} style={styles.link}>No account? Register</Text>
+      <Text 
+        onPress={() => router.push("/(auth)/register")} 
+        style={[styles.link, { color: isDark ? '#0a84ff' : '#007AFF' }]}
+      >
+        No account? Register
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, textAlign: "center", marginBottom: 20 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10 },
-  error: { color: "red", textAlign: "center" },
-  link: { color: "blue", textAlign: "center", marginTop: 10 },
+  container: { 
+    flex: 1, 
+    justifyContent: "center", 
+    padding: 20,
+  },
+  title: { 
+    fontSize: 28, 
+    textAlign: "center", 
+    marginBottom: 30,
+    fontWeight: "bold"
+  },
+  input: { 
+    borderWidth: 1, 
+    padding: 12, 
+    marginBottom: 12,
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  error: { 
+    color: "#ff3b30", 
+    textAlign: "center",
+    marginBottom: 12,
+    fontSize: 14,
+  },
+  link: { 
+    textAlign: "center", 
+    marginTop: 16,
+    fontSize: 16,
+  },
 });
