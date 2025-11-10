@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { api } from '@/utils/api';
@@ -118,14 +119,17 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.container}>
-        <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].tint} />
-      </ThemedView>
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+        <ThemedView style={styles.container}>
+          <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].tint} />
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <ThemedView style={styles.container}>
       <View style={styles.header}>
         <IconSymbol 
           name="person.circle.fill" 
@@ -197,7 +201,8 @@ export default function ProfileScreen() {
           <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
       </View>
-    </ThemedView>
+      </ThemedView>
+    </SafeAreaView>
   );
 }
 

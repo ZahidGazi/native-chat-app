@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet, useColorScheme } from "react-native";
+import { TextInput, Button, Text, StyleSheet, useColorScheme } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { loginUser } from "../../utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -24,7 +25,7 @@ export default function Login() {
   const isDark = colorScheme === 'dark';
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000' : '#fff' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#000' : '#fff' }]} edges={['top', 'bottom']}>
       <Text style={[styles.title, { color: isDark ? '#fff' : '#000' }]}>Login</Text>
       <TextInput 
         placeholder="Email" 
@@ -65,7 +66,7 @@ export default function Login() {
       >
         No account? Register
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 

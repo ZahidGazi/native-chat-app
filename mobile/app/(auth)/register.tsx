@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet, useColorScheme } from "react-native";
+import { TextInput, Button, Text, StyleSheet, useColorScheme } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { registerUser } from "../../utils/api";
 import { useRouter } from "expo-router";
 
@@ -23,7 +24,7 @@ export default function Register() {
   const isDark = colorScheme === 'dark';
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000' : '#fff' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#000' : '#fff' }]} edges={['top', 'bottom']}>
       <Text style={[styles.title, { color: isDark ? '#fff' : '#000' }]}>Register</Text>
       <TextInput 
         placeholder="Name" 
@@ -78,7 +79,7 @@ export default function Register() {
       >
         Already have an account? Login
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 

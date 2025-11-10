@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getUsers } from "../../utils/api";
 import { emitUserOnline, listenForPresenceUpdates } from "../../utils/socket";
 
@@ -90,7 +91,7 @@ export default function UserList() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#000' : '#f5f5f5' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#000' : '#f5f5f5' }} edges={['top']}>
       <View style={[
         styles.headerContainer,
         { 
@@ -158,7 +159,7 @@ export default function UserList() {
           />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

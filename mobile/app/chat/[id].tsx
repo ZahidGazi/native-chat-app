@@ -3,7 +3,8 @@ import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, Stack } from "expo-router";
 import { api, getMessages } from "../../utils/api";
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getSocket, emitUserOnline } from "../../utils/socket";
 
 export default function ChatScreen() {
@@ -16,6 +17,7 @@ export default function ChatScreen() {
   const [otherUserName, setOtherUserName] = useState("Chat");
   const typingTimeoutRef = useRef<any>(null);
   const inputTextRef = useRef("");
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const init = async () => {
@@ -240,9 +242,9 @@ export default function ChatScreen() {
         }
         textInputProps={{
           multiline: true,
-          // style: { maxHeight: 100 },
         }}
-      // minInputToolbarHeight={44}
+        bottomOffset={Platform.OS === 'ios' ? insets.bottom : 0}
+        minInputToolbarHeight={44 + (Platform.OS === 'android' ? insets.bottom : 0)}
       />
     </>
   );
