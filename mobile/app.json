@@ -4,6 +4,9 @@
       "eas": {
         "projectId": "35f1c1e4-72c2-41e6-a147-724613e8690a"
       }
+    },
+    "android": {
+      "package": "com.mnuvq.com"
     }
   }
 }
