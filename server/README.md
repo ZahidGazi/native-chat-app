@@ -110,13 +110,24 @@ In the Render dashboard, add the following environment variables:
 
 ### Step 6: Update Mobile App Configuration
 
-Update your mobile app's configuration to use the Render URL:
+Update your mobile app's configuration to use the production URL:
 
 In `mobile/constants/config.ts`:
 ```typescript
-export const API_URL = 'https://your-service-name.onrender.com';
-export const SOCKET_URL = 'https://your-service-name.onrender.com';
+const PRODUCTION_URL = "https://chat-app.zahid.cat";
+
+export const API_URL = __DEV__
+  ? Platform.OS === "web"
+    ? "http://localhost:4000"
+    : "http://192.168.1.36:4000"
+  : PRODUCTION_URL;
+
+export const SOCKET_URL = API_URL;
 ```
+
+This configuration automatically uses:
+- Production URL (`https://chat-app.zahid.cat`) when app is built for production
+- Development URLs when running in development mode
 
 ## API Endpoints
 
